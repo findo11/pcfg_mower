@@ -1,13 +1,15 @@
 import sys
-import re
+import shutil
 
 import os
+from distutils.dir_util import copy_tree
 from itertools import groupby
 
 
 class Rules:
     def __init__(self, config):
         self.rule_types = ['Alpha', 'Digits', 'Other', 'Capitalization', 'Keyboard', 'Context']
+        self.copy_dirs = ['Alpha', 'Digits', 'Other', 'Keyboard', 'Context', 'Markov']
 
         self.config = config
 
@@ -91,9 +93,9 @@ class Rules:
             rule_type = "Context"
 
         if rule_type == "":
-            print("ERROR: get_file_size")
-            print("value: " + value)
-            print("size: " + str(size))
+            print("ERROR: get_file_size", file=sys.stderr)
+            print("value: " + value, file=sys.stderr)
+            print("size: " + str(size), file=sys.stderr)
             return -1
 
         return self.rulesets["Sizes"][rule_type][size + ".txt"]
@@ -110,9 +112,44 @@ class Rules:
 
                 file_size = self.get_file_size(value, size)
                 if file_size == -1:
-                    return 1
+                    return -1
                 cnt_base *= file_size
 
             cnt_all += cnt_base
         return cnt_all
 
+    def write_grammar(self):
+        os.mkdir(self.config["output_dir"] + "/Grammar")
+        output_path = self.config["output_dir"] + '/Grammar/Grammar.txt'
+        with open(output_path, 'w')  as g:
+            for tuple in self.rulesets["Grammar"]:
+                rule_string = tuple[0] + "\t" + str(tuple[1]) + "\n"
+                g.write(rule_string)
+        return 0
+
+    def write_capitalization(self):
+        os.mkdir(self.config["output_dir"] + "/Capitalization")
+        for file in self.rulesets["Capitalization"]:
+            with open(self.config["output_dir"] + "/Capitalization/" + file, 'w')  as c:
+                for tuple in self.rulesets["Capitalization"][file]:
+                    rule_string = tuple[0] + "\t" + str(tuple[1]) + "\n"
+                    c.write(rule_string)
+
+        return 0
+
+
+    def save_new_grammar(self):
+        if os.path.isdir(self.config["output_dir"]):
+            shutil.rmtree(self.config["output_dir"])
+        os.mkdir (self.config["output_dir"])
+
+        for dirname in self.copy_dirs:
+            original_dir = self.config["input_dir"] + '/' + dirname
+            target_dir = self.config["output_dir"] + '/' + dirname
+            copy_tree(original_dir, target_dir)
+
+        shutil.copy(self.config["input_dir"] + '/config.ini', self.config["output_dir"] + '/')
+
+        self.write_grammar()
+        self.write_capitalization()
+        return 0
