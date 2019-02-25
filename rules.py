@@ -2,7 +2,6 @@ import sys
 import shutil
 
 import os
-from distutils.dir_util import copy_tree
 from itertools import groupby
 
 
@@ -146,7 +145,7 @@ class Rules:
         for dirname in self.copy_dirs:
             original_dir = self.config["input_dir"] + '/' + dirname
             target_dir = self.config["output_dir"] + '/' + dirname
-            copy_tree(original_dir, target_dir)
+            shutil.copytree(original_dir, target_dir)
 
         shutil.copy(self.config["input_dir"] + '/config.ini', self.config["output_dir"] + '/')
 
