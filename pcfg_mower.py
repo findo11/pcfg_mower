@@ -15,13 +15,16 @@ if sys.version_info[0] < 3:
 def parse_arguments(config):
     parser = argparse.ArgumentParser(description='Filters ruleset by given settings')
     parser.add_argument('--input','-i', help='Input grammar directory', required=True)
-    parser.add_argument('--output','-o', help='Output grammar directory', required=True)
+    parser.add_argument('--output','-o', help='Output grammar directory', required=False)
     parser.add_argument('--limit', '-l', help='Password guesses limit', required=False)
 
     try:
         args=parser.parse_args()
         config["input_dir"] = args.input
-        config["output_dir"] = args.output
+        if args.output:
+            config["output_dir"] = args.output
+        else:
+            config["output_dir"] = False
         config["bs"] = float(0.01)
         config["cs"] = float(0.01)
         if args.limit:
@@ -76,6 +79,12 @@ def main():
     if guess_cnt == -1:
         print("ERROR: get_guesses.cnt", file=sys.stderr)
         return 1
+
+    if not config["output_dir"]:
+        # output grammar is not defined
+        # just printing password guesses count
+        print(guess_cnt)
+        return 0
 
     filter = Filter(rules)
     cs = config["cs"]
