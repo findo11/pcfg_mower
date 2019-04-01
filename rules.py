@@ -15,6 +15,7 @@ class Rules:
         self.rulesets = dict()
         self.rulesets["Grammar"] = []
         self.rulesets["Capitalization"] = dict()
+        self.rulesets["Alpha"] = dict()
         self.rulesets["Sizes"] = dict()
 
 
@@ -26,16 +27,19 @@ class Rules:
         self.rulesets["Grammar"].append(tuple)
         return 0
 
-    def append_capitalization(self, file, rule):
+    # file 4.txt
+    # rule ahoj 0.564
+    # type "Alpha"
+    def append_rule_from_file(self, file, rule, type):
         rule_arr = rule.split('\t')
         mask = rule_arr[0]
         prob = float(rule_arr[1])
         tuple = mask, prob
-        self.rulesets["Capitalization"][file].append(tuple)
+        self.rulesets[type][file].append(tuple)
         return 0
 
     def load_grammar(self):
-        file_path = self.config["input_dir"] + '/Grammar/Grammar.txt'
+        file_path = self.config.input_dir + '/Grammar/Grammar.txt'
         try:
             with open(file_path, 'r') as grammar_file:
                 for rule in grammar_file:
@@ -48,13 +52,27 @@ class Rules:
         return 0
 
     def load_capitalization(self):
-        dir_path = self.config["input_dir"] + '/Capitalization/'
+        dir_path = self.config.input_dir + '/Capitalization/'
         for file in os.listdir(dir_path):
             self.rulesets["Capitalization"][file] = []
             try:
                 with open(dir_path + file, 'r') as f:
                     for rule in f:
-                        self.append_capitalization(file, rule)
+                        self.append_rule_from_file(file, rule, "Capitalization")
+
+            except IOError:
+                print("ERROR: File " + dir_path + file + " cannot be opened", file=sys.stderr)
+                return 1
+        return 0
+
+    def load_alpha(self):
+        dir_path = self.config.input_dir + '/Alpha/'
+        for file in os.listdir(dir_path):
+            self.rulesets["Alpha"][file] = []
+            try:
+                with open(dir_path + file, 'r') as f:
+                    for rule in f:
+                        self.append_rule_from_file(file, rule, "Alpha")
 
             except IOError:
                 print("ERROR: File " + dir_path + file + " cannot be opened", file=sys.stderr)
@@ -64,7 +82,7 @@ class Rules:
     def load_terminals_cnt(self):
         for rule_type in self.rule_types:
             self.rulesets["Sizes"][rule_type] = dict()
-            dir_path = self.config["input_dir"] + '/' + rule_type + '/'
+            dir_path = self.config.input_dir + '/' + rule_type + '/'
             for file in os.listdir(dir_path):
                 try:
                     with open(dir_path + file, 'r') as f:
@@ -118,8 +136,8 @@ class Rules:
         return cnt_all
 
     def write_grammar(self):
-        os.mkdir(self.config["output_dir"] + "/Grammar")
-        output_path = self.config["output_dir"] + '/Grammar/Grammar.txt'
+        os.mkdir(self.config.output_dir + "/Grammar")
+        output_path = self.config.output_dir + '/Grammar/Grammar.txt'
         with open(output_path, 'w')  as g:
             for tuple in self.rulesets["Grammar"]:
                 rule_string = tuple[0] + "\t" + str(tuple[1]) + "\n"
@@ -127,9 +145,9 @@ class Rules:
         return 0
 
     def write_capitalization(self):
-        os.mkdir(self.config["output_dir"] + "/Capitalization")
+        os.mkdir(self.config.output_dir + "/Capitalization")
         for file in self.rulesets["Capitalization"]:
-            with open(self.config["output_dir"] + "/Capitalization/" + file, 'w')  as c:
+            with open(self.config.output_dir + "/Capitalization/" + file, 'w')  as c:
                 for tuple in self.rulesets["Capitalization"][file]:
                     rule_string = tuple[0] + "\t" + str(tuple[1]) + "\n"
                     c.write(rule_string)
@@ -138,16 +156,16 @@ class Rules:
 
 
     def save_new_grammar(self):
-        if os.path.isdir(self.config["output_dir"]):
-            shutil.rmtree(self.config["output_dir"])
-        os.mkdir (self.config["output_dir"])
+        if os.path.isdir(self.config.output_dir):
+            shutil.rmtree(self.config.output_dir)
+        os.mkdir (self.config.output_dir)
 
         for dirname in self.copy_dirs:
-            original_dir = self.config["input_dir"] + '/' + dirname
-            target_dir = self.config["output_dir"] + '/' + dirname
+            original_dir = self.config.input_dir + '/' + dirname
+            target_dir = self.config.output_dir + '/' + dirname
             shutil.copytree(original_dir, target_dir)
 
-        shutil.copy(self.config["input_dir"] + '/config.ini', self.config["output_dir"] + '/')
+        shutil.copy(self.config.input_dir + '/config.ini', self.config.output_dir + '/')
 
         self.write_grammar()
         self.write_capitalization()

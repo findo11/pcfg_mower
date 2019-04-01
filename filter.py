@@ -21,7 +21,7 @@ class Filter:
         prob_before_mowing = self.get_total_grammar_prob()
         prob_diff = 0
 
-        while (prob_diff < self.rules.config["bs"]):
+        while (prob_diff < self.rules.config.bs):
             grammar_len = len(self.rules.rulesets["Grammar"])
             self.rules.rulesets["Grammar"].pop(grammar_len-1)
             prob_after_mowing = self.get_total_grammar_prob()
