@@ -88,20 +88,38 @@ def main():
         # output grammar is not defined
         # just printing password guesses count
         print(guess_cnt)
-        return 0
+        #return 0
+
+    filter = Filter(rules)
 
     if not config.attack_dict_file == "":
         attack_dictionaries = Attack_dictionaries(config.attack_dict_file)
         if attack_dictionaries.load_dictionaries():
             print("ERROR: load_dictionaries", file=sys.stderr)
             return 1
-        attack_dictionaries.assign_probability(rules)
+        if attack_dictionaries.assign_probability(rules):
+            print("ERROR: assign_probability", file=sys.stderr)
+            return 1
+        rules.append_attack_dictionaries(attack_dictionaries)
+        filter.rebuild_size("Alpha")
+        guess_cnt = rules.get_guesses_cnt()
+        if guess_cnt == -1:
+            print("ERROR: get_guesses_cnt", file=sys.stderr)
+            return 1
+        if config.output_dir == "":
+            # output grammar is not defined
+            # just printing password guesses count
+            print(guess_cnt)
+            return 0
 
-    debug = Debug
-    debug.print_dictionaries(attack_dictionaries)
-    return 0
+    #debug = Debug
+    #debug.print_ruleset_type_file(rules, "Alpha", "8.txt")
 
-    filter = Filter(rules)
+    #alpha_dict = dict(rules.rulesets["Alpha"]["8.txt"])
+    #print(alpha_dict)
+    #debug.print_dictionaries(attack_dictionaries)
+    #return 0
+
     cs = config.cs
 
     print("limit: " + str(config.limit))

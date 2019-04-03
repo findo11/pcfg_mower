@@ -8,12 +8,13 @@ class Filter:
             total_prob += tuple[1]
         return total_prob
 
-    def rebuild_capitalization_size(self):
-        self.rules.rulesets["Sizes"]["Capitalization"].clear()
+    # type = "Capitalization" | "Alpha"
+    def rebuild_size(self, type):
+        self.rules.rulesets["Sizes"][type].clear()
 
-        for file in self.rules.rulesets["Capitalization"]:
-            num_lines = len(self.rules.rulesets["Capitalization"][file])
-            self.rules.rulesets["Sizes"]["Capitalization"][file] = num_lines
+        for file in self.rules.rulesets[type]:
+            num_lines = len(self.rules.rulesets[type][file])
+            self.rules.rulesets["Sizes"][type][file] = num_lines
 
         return 0
 
@@ -37,6 +38,6 @@ class Filter:
                     self.rules.rulesets["Capitalization"][file].remove(tuple)
                     removed = True
         if removed:
-            self.rebuild_capitalization_size()
+            self.rebuild_size("Capitalization")
 
         return 0

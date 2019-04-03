@@ -52,8 +52,8 @@ class Attack_dictionaries:
         lowest_prob_index = words_cnt / 100 * percentage
         lowest_prob_index = int(math.ceil(lowest_prob_index))
         _, lowest_prob = rules.rulesets["Alpha"][grammar_alpha_file][lowest_prob_index]
-        debug = Debug()
-        debug.print_analysed_alpha_file(grammar_alpha_file, top_prob, lowest_prob, lowest_prob_index, words_cnt)
+        #debug = Debug()
+        #debug.print_analysed_alpha_file(grammar_alpha_file, top_prob, lowest_prob, lowest_prob_index, words_cnt)
         return (top_prob, lowest_prob)
 
     def assign_probability(self, rules):

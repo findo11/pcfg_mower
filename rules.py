@@ -154,7 +154,6 @@ class Rules:
 
         return 0
 
-
     def save_new_grammar(self):
         if os.path.isdir(self.config.output_dir):
             shutil.rmtree(self.config.output_dir)
@@ -169,4 +168,20 @@ class Rules:
 
         self.write_grammar()
         self.write_capitalization()
+        return 0
+
+    def append_attack_dictionaries(self, ad):
+        for file in ad.dictionaries.keys():
+            for len in ad.dictionaries[file].keys():
+                alpha_file = str(len) + ".txt"
+                # create dict from list
+                tmp_dic = dict(self.rulesets["Alpha"][alpha_file])
+                # add new words from attack dictionaries
+                # dict solves duplicities
+                for word, prob in ad.dictionaries[file][len].items():
+                    tmp_dic[word] = prob
+                # convert dict back to sorted list
+                sorted_list = sorted(tmp_dic.items(), key=lambda kv: kv[1], reverse=True)
+                # update list
+                self.rulesets["Alpha"][alpha_file] = sorted_list
         return 0
