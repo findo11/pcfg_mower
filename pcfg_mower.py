@@ -110,15 +110,10 @@ def main():
             # output grammar is not defined
             # just printing password guesses count
             print(guess_cnt)
+            #debug = Debug
+            #debug.print_dictionaries(attack_dictionaries)
+            #debug.print_ruleset_type_file(rules, "Alpha", "8.txt")
             return 0
-
-    #debug = Debug
-    #debug.print_ruleset_type_file(rules, "Alpha", "8.txt")
-
-    #alpha_dict = dict(rules.rulesets["Alpha"]["8.txt"])
-    #print(alpha_dict)
-    #debug.print_dictionaries(attack_dictionaries)
-    #return 0
 
     cs = config.cs
 

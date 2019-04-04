@@ -174,12 +174,22 @@ class Rules:
         for file in ad.dictionaries.keys():
             for len in ad.dictionaries[file].keys():
                 alpha_file = str(len) + ".txt"
+
+                if alpha_file not in self.rulesets["Alpha"]:
+                    print("skipping length " + str(len) + "...")
+                    continue
                 # create dict from list
                 tmp_dic = dict(self.rulesets["Alpha"][alpha_file])
                 # add new words from attack dictionaries
                 # dict solves duplicities
+                # if word already exists in grammar and has smaller prob then overwrite it
+                # password  0.00123 => password  0.0238
                 for word, prob in ad.dictionaries[file][len].items():
-                    tmp_dic[word] = prob
+                    if word in tmp_dic:
+                        if tmp_dic[word] < prob:
+                            tmp_dic[word] = prob
+                    else:
+                        tmp_dic[word] = prob
                 # convert dict back to sorted list
                 sorted_list = sorted(tmp_dic.items(), key=lambda kv: kv[1], reverse=True)
                 # update list

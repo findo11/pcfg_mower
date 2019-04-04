@@ -30,6 +30,10 @@ class Attack_dictionaries:
             return 1
         return 0
 
+    def remove_words_with_len(self, file, len):
+        self.dictionaries[file].pop(len)
+        return 0
+
     def append_dictionary(self, dict_file):
         self.dictionaries[dict_file] = defaultdict(dict)
         try:
@@ -44,9 +48,8 @@ class Attack_dictionaries:
             return 1
         return 0
 
-    def analyse_alpha_file_prob(self, percentage, len, rules):
+    def analyse_alpha_file_prob(self, percentage, grammar_alpha_file, rules):
         # first item in An.txt (password 0.1254546)
-        grammar_alpha_file = str(len)+".txt"
         _, top_prob = rules.rulesets["Alpha"][grammar_alpha_file][0]
         words_cnt = rules.rulesets["Sizes"]["Alpha"][grammar_alpha_file]
         lowest_prob_index = words_cnt / 100 * percentage
@@ -69,7 +72,14 @@ class Attack_dictionaries:
                 print("ERROR: undefined priority" + priority, file=sys.stderr)
                 return 1
             for len in self.dictionaries[file].keys():
-                top_prob, low_prob = self.analyse_alpha_file_prob(percentage, len, rules)
+                # Does file exist in grammar?
+                alpha_file = str(len) + ".txt"
+                if alpha_file not in rules.rulesets["Alpha"]:
+                    print("You are trying to add new word to Alpha[" + alpha_file + "] but the file doesn't exist")
+                    #print("Removing all words with length " + str(len))
+                    #self.remove_words_with_len(file, len)
+                    continue
+                top_prob, low_prob = self.analyse_alpha_file_prob(percentage, alpha_file, rules)
                 for word in self.dictionaries[file][len].keys():
                     generated_prob = random.uniform(low_prob, top_prob)
                     generated_prob = round(generated_prob,8)
