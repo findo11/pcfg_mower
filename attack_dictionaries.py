@@ -11,6 +11,8 @@ class Attack_dictionaries:
         self.config_file = config
         self.priorities = dict()
         self.dictionaries = dict()
+        self.successfully_appended = defaultdict(dict)
+        self.duplicities = defaultdict(dict)
 
         # priorities["file"] = "high"
         # dictionaries["file"]["length"]["password"] = 0.1344

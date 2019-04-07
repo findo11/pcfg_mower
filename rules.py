@@ -188,8 +188,11 @@ class Rules:
                     if word in tmp_dic:
                         if tmp_dic[word] < prob:
                             tmp_dic[word] = prob
+                            ad.successfully_appended[file][word] = prob
+                            ad.duplicities[file][word] = prob
                     else:
                         tmp_dic[word] = prob
+                        ad.successfully_appended[file][word] = prob
                 # convert dict back to sorted list
                 sorted_list = sorted(tmp_dic.items(), key=lambda kv: kv[1], reverse=True)
                 # update list

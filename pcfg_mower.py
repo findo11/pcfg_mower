@@ -51,6 +51,10 @@ def print_ruleset_stat(rules, filter, cs, guess_cnt):
     print(" Capitalization rules: " + str(cap_rules))
     print(" Capitalization files: " + str(len(rules.rulesets["Capitalization"])))
     print(" Capitalization prob: " + str(cap_prob))
+    alpha_size = 0
+    for file in rules.rulesets["Sizes"]["Alpha"]:
+        alpha_size += rules.rulesets["Sizes"]["Alpha"][file]
+    print(" Alpha size: " + str(alpha_size))
     print("")
     return 0
 
@@ -83,14 +87,23 @@ def main():
     if guess_cnt == -1:
         print("ERROR: get_guesses_cnt", file=sys.stderr)
         return 1
+    print("Original:\t" + str(guess_cnt))
 
     if config.output_dir == "":
         # output grammar is not defined
         # just printing password guesses count
-        print(guess_cnt)
-        #return 0
+        return 0
 
     filter = Filter(rules)
+
+    print("limit: " + str(config.limit))
+    print("bs: " + str(config.bs))
+    print("cs: " + str(config.cs))
+    print("")
+
+    print(config.input_dir)
+    cs = config.cs
+    print_ruleset_stat(rules, filter, cs, guess_cnt)
 
     if not config.attack_dict_file == "":
         attack_dictionaries = Attack_dictionaries(config.attack_dict_file)
@@ -101,29 +114,18 @@ def main():
             print("ERROR: assign_probability", file=sys.stderr)
             return 1
         rules.append_attack_dictionaries(attack_dictionaries)
+        #print(attack_dictionaries.successfully_appended)
         filter.rebuild_size("Alpha")
         guess_cnt = rules.get_guesses_cnt()
         if guess_cnt == -1:
             print("ERROR: get_guesses_cnt", file=sys.stderr)
             return 1
-        if config.output_dir == "":
-            # output grammar is not defined
-            # just printing password guesses count
-            print(guess_cnt)
-            #debug = Debug
-            #debug.print_dictionaries(attack_dictionaries)
-            #debug.print_ruleset_type_file(rules, "Alpha", "8.txt")
-            return 0
-
-    cs = config.cs
-
-    print("limit: " + str(config.limit))
-    print("bs: " + str(config.bs))
-    print("cs: " + str(config.cs))
-    print("")
-
-    print(config.input_dir)
-    print_ruleset_stat(rules, filter, cs, guess_cnt)
+        #print("AA:\t\t" + str(guess_cnt))
+        debug = Debug()
+        debug.print_appended_dictionary_words(attack_dictionaries)
+        #debug.print_dictionaries(attack_dictionaries)
+        #debug.print_ruleset_type_file(rules, "Alpha", "8.txt")
+        #return 0
 
     while (guess_cnt > config.limit):
         filter.mow_grammar()
