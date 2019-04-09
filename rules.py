@@ -8,7 +8,7 @@ from itertools import groupby
 class Rules:
     def __init__(self, config):
         self.rule_types = ['Alpha', 'Digits', 'Other', 'Capitalization', 'Keyboard', 'Context']
-        self.copy_dirs = ['Alpha', 'Digits', 'Other', 'Keyboard', 'Context', 'Markov']
+        self.copy_dirs = ['Digits', 'Other', 'Keyboard', 'Context', 'Markov']
 
         self.config = config
 
@@ -144,11 +144,11 @@ class Rules:
                 g.write(rule_string)
         return 0
 
-    def write_capitalization(self):
-        os.mkdir(self.config.output_dir + "/Capitalization")
-        for file in self.rulesets["Capitalization"]:
-            with open(self.config.output_dir + "/Capitalization/" + file, 'w')  as c:
-                for tuple in self.rulesets["Capitalization"][file]:
+    def write_rule_type_dir(self, type):
+        os.mkdir(self.config.output_dir + "/" + type)
+        for file in self.rulesets[type]:
+            with open(self.config.output_dir + "/" + type + "/" + file, 'w')  as c:
+                for tuple in self.rulesets[type][file]:
                     rule_string = tuple[0] + "\t" + str(tuple[1]) + "\n"
                     c.write(rule_string)
 
@@ -167,7 +167,8 @@ class Rules:
         shutil.copy(self.config.input_dir + '/config.ini', self.config.output_dir + '/')
 
         self.write_grammar()
-        self.write_capitalization()
+        self.write_rule_type_dir("Capitalization")
+        self.write_rule_type_dir("Alpha")
         return 0
 
     def append_attack_dictionaries(self, ad):
