@@ -127,6 +127,12 @@ def main():
         #debug.print_ruleset_type_file(rules, "Alpha", "8.txt")
         #return 0
 
+    if config.limit == 0:
+        print(config.output_dir)
+        print_ruleset_stat(rules, filter, cs, guess_cnt)
+        rules.save_new_grammar()
+        return 0
+
     while (guess_cnt > config.limit):
         filter.mow_grammar()
         filter.mow_capitalization(cs)
