@@ -177,7 +177,7 @@ class Rules:
                 alpha_file = str(len) + ".txt"
 
                 if alpha_file not in self.rulesets["Alpha"]:
-                    print("skipping length " + str(len) + "...")
+                    #print("skipping length " + str(len) + "...")
                     continue
                 # create dict from list
                 tmp_dic = dict(self.rulesets["Alpha"][alpha_file])

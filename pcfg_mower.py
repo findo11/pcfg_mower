@@ -3,6 +3,7 @@
 from __future__ import print_function
 import sys
 import argparse
+import logging
 
 from attack_dictionaries import Attack_dictionaries
 from config import Config
@@ -37,7 +38,9 @@ def parse_arguments(config):
 
     return 0
 
-def print_ruleset_stat(rules, filter, cs, guess_cnt):
+def print_ruleset_stat(rules, filter, cs, guess_cnt, quiet):
+    if quiet:
+        return 0
     print(" Guess count: " + str(guess_cnt))
     print(" Grammar prob: " + str(filter.get_total_grammar_prob()))
     print(" Grammar size: " + str(len(rules.rulesets["Grammar"])))
@@ -59,27 +62,32 @@ def print_ruleset_stat(rules, filter, cs, guess_cnt):
     return 0
 
 def pcfg_mower(config):
+    print = logging.info
+    iprint = logging.warning
+    logging.basicConfig(level=logging.WARNING if config.quiet else logging.INFO,
+                        format="%(message)s")
+
     rules = Rules(config)
 
     if rules.load_grammar():
-        print("ERROR: load_grammar", file=sys.stderr)
+        iprint("ERROR: load_grammar", file=sys.stderr)
         return 1
 
     if rules.load_capitalization():
-        print("ERROR: load_capitalization", file=sys.stderr)
+        iprint("ERROR: load_capitalization", file=sys.stderr)
         return 1
 
     if rules.load_alpha():
-        print("ERROR: load_alpha", file=sys.stderr)
+        iprint("ERROR: load_alpha", file=sys.stderr)
         return 1
 
     if rules.load_terminals_cnt():
-        print("ERROR: load_terminals_cnt", file=sys.stderr)
+        iprint("ERROR: load_terminals_cnt", file=sys.stderr)
         return 1
 
     guess_cnt = rules.get_guesses_cnt()
     if guess_cnt == -1:
-        print("ERROR: get_guesses_cnt", file=sys.stderr)
+        iprint("ERROR: get_guesses_cnt", file=sys.stderr)
         return 1
     print("Original:\t" + str(guess_cnt))
 
@@ -97,29 +105,24 @@ def pcfg_mower(config):
 
     print(config.input_dir)
     cs = config.cs
-    print_ruleset_stat(rules, filter, cs, guess_cnt)
+    print_ruleset_stat(rules, filter, cs, guess_cnt, config.quiet)
 
     if not config.attack_dict_file == "":
         attack_dictionaries = Attack_dictionaries(config.attack_dict_file)
         if attack_dictionaries.load_dictionaries():
-            print("ERROR: load_dictionaries", file=sys.stderr)
+            iprint("ERROR: load_dictionaries", file=sys.stderr)
             return 1
         if attack_dictionaries.assign_probability(rules):
-            print("ERROR: assign_probability", file=sys.stderr)
+            iprint("ERROR: assign_probability", file=sys.stderr)
             return 1
         rules.append_attack_dictionaries(attack_dictionaries)
-        #print(attack_dictionaries.successfully_appended)
         filter.rebuild_size("Alpha")
         guess_cnt = rules.get_guesses_cnt()
         if guess_cnt == -1:
-            print("ERROR: get_guesses_cnt", file=sys.stderr)
+            iprint("ERROR: get_guesses_cnt", file=sys.stderr)
             return 1
-        #print("AA:\t\t" + str(guess_cnt))
         debug = Debug()
-        debug.print_appended_dictionary_words(attack_dictionaries)
-        #debug.print_dictionaries(attack_dictionaries)
-        #debug.print_ruleset_type_file(rules, "Alpha", "8.txt")
-        #return 0
+        debug.print_appended_dictionary_words(attack_dictionaries, config.quiet)
 
     if config.limit == 0:
         print(config.output_dir)
@@ -131,14 +134,13 @@ def pcfg_mower(config):
         filter.mow_grammar()
         filter.mow_capitalization(cs)
         guess_cnt = rules.get_guesses_cnt()
-        #print_ruleset_stat(rules, filter, cs, guess_cnt)
         cs += config.cs
 
     print(config.output_dir)
-    print_ruleset_stat(rules, filter, cs, guess_cnt)
+    print_ruleset_stat(rules, filter, cs, guess_cnt, config.quiet)
 
     if rules.save_new_grammar():
-        print("ERROR: save_new_grammar", file=sys.stderr)
+        iprint("ERROR: save_new_grammar", file=sys.stderr)
         return 1
 
     return 0

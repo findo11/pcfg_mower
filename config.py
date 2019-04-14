@@ -5,4 +5,5 @@ class Config:
     cs = float(0.001)
     limit = 500000000
     attack_dict_file = ""
+    quiet = False
 

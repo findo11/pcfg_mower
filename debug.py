@@ -46,7 +46,9 @@ class Debug:
         print("      size: " + str(words_cnt))
         return 0
 
-    def print_appended_dictionary_words(self, ad):
+    def print_appended_dictionary_words(self, ad, quiet):
+        if quiet:
+            return 0
         missing = defaultdict(dict)
         all = defaultdict(dict)
         for file in ad.dictionaries.keys():

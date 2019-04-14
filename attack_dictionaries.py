@@ -1,10 +1,10 @@
 import sys
 import math
 import random
+import logging
 from collections import defaultdict
 
 from debug import Debug
-
 
 class Attack_dictionaries:
     def __init__(self, config):
@@ -79,9 +79,7 @@ class Attack_dictionaries:
                 # Does file exist in grammar?
                 alpha_file = str(len) + ".txt"
                 if alpha_file not in rules.rulesets["Alpha"]:
-                    print("You are trying to add new word to Alpha[" + alpha_file + "] but the file doesn't exist")
-                    #print("Removing all words with length " + str(len))
-                    #self.remove_words_with_len(file, len)
+                    #print("You are trying to add new word to Alpha[" + alpha_file + "] but the file doesn't exist")
                     continue
                 top_prob, low_prob = self.analyse_alpha_file_prob(percentage, alpha_file, rules)
                 for word in self.dictionaries[file][len].keys():
