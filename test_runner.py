@@ -18,7 +18,8 @@ grammar_dir = "/home/pcfg/oldserver/pcfg/pcfg_mower/Rules/"
 go_manager_dir = "/home/pcfg/oldserver/pcfg/go/"
 output_guesses_dir = "/home/pcfg/oldserver/pcfg/pcfg_mower/"
 dictmatcher_dir = "/home/pcfg/oldserver/pcfg/dictmatcher/bin/"
-grammar_input_arr = ['DP700']
+#grammar_input_arr = ['rockyou-65','myspace','darkweb','tuscl']
+grammar_input_arr = ['rockyou-65']
 cracking_ref_arr = ['/home/pcfg/oldserver/pcfg/SecLists/Passwords/Leaked-Databases/rockyou-65.txt',
                    '/home/pcfg/oldserver/pcfg/SecLists/Passwords/probable-v2-top12000.txt',
                    '/home/pcfg/oldserver/pcfg/SecLists/Passwords/edited/myspace.txt',
@@ -74,7 +75,7 @@ def main():
 
         config.input_dir = path_to_rlb_grammar
         config.output_dir = path_to_mow1000M_grammar
-        config.limit = 5000000
+        config.limit = 1000000000
         config.quiet = True
         config.attack_dict_file = ""
 
@@ -84,7 +85,7 @@ def main():
             print(green("OK"))
         else:
             print(red("FAIL"))
-            exit(1)
+            continue
 
         get_grammar_stats(grammar_name, "_mow1000M")
 
@@ -93,7 +94,7 @@ def main():
         # mow500M
         path_to_mow500M_grammar = grammar_dir + grammar_name + "_mow500M/"
         config.output_dir = path_to_mow500M_grammar
-        config.limit = 3000000
+        config.limit = 500000000
 
         print("pcfg_mower: " + grammar_name + "_mow500M", end='\t', flush=True)
         sys.stdout.flush()
@@ -102,7 +103,7 @@ def main():
             print(green("OK"))
         else:
             print(red("FAIL"))
-            exit(1)
+            continue
 
         get_grammar_stats(grammar_name, "_mow500M")
 
@@ -111,7 +112,7 @@ def main():
         # aa1000M
         path_to_aa1000M_grammar = grammar_dir + grammar_name + "_aa1000M/"
         config.output_dir = path_to_aa1000M_grammar
-        config.limit = 5000000
+        config.limit = 1000000000
         config.attack_dict_file = "attack_dict_config"
 
         print("pcfg_mower: " + grammar_name + "_aa1000M", end='\t', flush=True)
@@ -121,7 +122,7 @@ def main():
             print(green("OK"))
         else:
             print(red("FAIL"))
-            exit(1)
+            continue
 
         get_grammar_stats(grammar_name, "_aa1000M")
 
@@ -130,7 +131,7 @@ def main():
         # aa500M
         path_to_aa500M_grammar = grammar_dir + grammar_name + "_aa500M/"
         config.output_dir = path_to_aa500M_grammar
-        config.limit = 3000000
+        config.limit = 500000000
         config.attack_dict_file = "attack_dict_config"
 
         print("pcfg_mower: " + grammar_name + "_aa500M", end='\t', flush=True)
@@ -140,7 +141,7 @@ def main():
             print(green("OK"))
         else:
             print(red("FAIL"))
-            exit(1)
+            continue
 
         get_grammar_stats(grammar_name, "_aa500M")
 
@@ -156,13 +157,16 @@ def main():
             start = time.time()
             (exitcode, output) = subprocess.getstatusoutput("timeout 10m " + go_manager_dir + "pcfg-manager -r " + gr + " > " + output_guesses_grammar_dir + gr)
             elapsed = round((time.time() - start),1)
-            if exitcode == 0:
+            if exitcode == 0 or exitcode == 124:
                 print(green("OK"))
                 res[grammar_name][gr]["Time"] = elapsed
                 res[grammar_name][gr]["Size"] = os.stat(output_guesses_grammar_dir + gr).st_size
                 res[grammar_name][gr]["Count"] = subprocess.getoutput("wc -l " + output_guesses_grammar_dir + gr).split()[0]
             else:
                 print(red("FAIL"))
+                res[grammar_name][gr]["Time"] = "x"
+                res[grammar_name][gr]["Size"] = "x"
+                res[grammar_name][gr]["Count"] = "x"
 
         ########################################################################################################
         # RUN DICTMATCHER
@@ -178,9 +182,11 @@ def main():
                         res[grammar_name][gr][ref] = cracked
                     else:
                         print(red("grep failed" + str(exitcode_grep)))
+                        res[grammar_name][gr][ref] = "x"
                 else:
                     print(red(str(exitcode)))
                     print("cd " + dictmatcher_dir + "; " + "./dictmatcher -e " + output_guesses_grammar_dir + gr + " -d " + ref)
+                    res[grammar_name][gr][ref] = "x"
                     continue
 
     ########################################################################################################
