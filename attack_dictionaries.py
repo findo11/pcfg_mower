@@ -56,6 +56,8 @@ class Attack_dictionaries:
         words_cnt = rules.rulesets["Sizes"]["Alpha"][grammar_alpha_file]
         lowest_prob_index = words_cnt / 100 * percentage
         lowest_prob_index = int(math.ceil(lowest_prob_index))
+        if lowest_prob_index >= words_cnt:
+            lowest_prob_index = words_cnt-1
         _, lowest_prob = rules.rulesets["Alpha"][grammar_alpha_file][lowest_prob_index]
         #debug = Debug()
         #debug.print_analysed_alpha_file(grammar_alpha_file, top_prob, lowest_prob, lowest_prob_index, words_cnt)

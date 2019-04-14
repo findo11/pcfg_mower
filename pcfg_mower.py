@@ -58,13 +58,7 @@ def print_ruleset_stat(rules, filter, cs, guess_cnt):
     print("")
     return 0
 
-def main():
-    config = Config
-
-    if parse_arguments(config):
-        print("ERROR: parse_arguments", file=sys.stderr)
-        return 1
-
+def pcfg_mower(config):
     rules = Rules(config)
 
     if rules.load_grammar():
@@ -151,4 +145,10 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    config = Config
+
+    if parse_arguments(config):
+        print("ERROR: parse_arguments", file=sys.stderr)
+        exit(1)
+
+    pcfg_mower(config)

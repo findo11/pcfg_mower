@@ -24,4 +24,5 @@ function delete_long_base() {
     done < "$input_grammar"
 }
 
-delete_long_base 10
+delete_long_base 10 > tmp.txt
+mv tmp.txt $input_grammar
