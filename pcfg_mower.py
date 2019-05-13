@@ -126,7 +126,7 @@ def pcfg_mower(config):
 
     if config.limit == 0:
         print(config.output_dir)
-        print_ruleset_stat(rules, filter, cs, guess_cnt)
+        print_ruleset_stat(rules, filter, cs, guess_cnt, config.quiet)
         rules.save_new_grammar()
         return 0
 
