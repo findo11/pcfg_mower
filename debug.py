@@ -89,3 +89,17 @@ class Debug:
                 #print("    " + word + "\t" + str(prob))
 
         print()
+
+    def print_prob_groups(self, rules):
+        total = 0
+        known_probs = defaultdict(dict)
+        for file in rules.rulesets["Alpha"].keys():
+            for tuple in rules.rulesets["Alpha"][file]:
+                known_probs[file][tuple[1]] = True
+
+        for file in known_probs.keys():
+            file_cnt = len(known_probs[file])
+            total += file_cnt
+            print(file + ":\t" + str(file_cnt))
+
+        print("Total prob groups: " + str(total))

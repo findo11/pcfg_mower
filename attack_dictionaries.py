@@ -67,11 +67,14 @@ class Attack_dictionaries:
         for file in self.dictionaries.keys():
             priority = self.priorities[file]
             if priority == "high":
-                percentage = 5
+                #percentage = 5
+                percentage = 3
             elif priority == "medium":
-                percentage = 30
+                #percentage = 30
+                percentage = 20
             elif priority == "low":
-                percentage = 60
+                #percentage = 60
+                percentage = 40
             else:
                 print("ERROR: undefined priority" + priority, file=sys.stderr)
                 return 1
@@ -83,9 +86,9 @@ class Attack_dictionaries:
                     continue
                 top_prob, low_prob = self.analyse_alpha_file_prob(percentage, alpha_file, rules)
                 for word in self.dictionaries[file][len].keys():
-                    generated_prob = random.uniform(low_prob, top_prob)
-                    generated_prob = round(generated_prob,8)
-                    self.dictionaries[file][len][word] = generated_prob
+                    #generated_prob = random.uniform(low_prob, top_prob)
+                    #generated_prob = round(generated_prob,8)
+                    self.dictionaries[file][len][word] = low_prob
         return 0
 
 

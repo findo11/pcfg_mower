@@ -68,6 +68,7 @@ def pcfg_mower(config):
                         format="%(message)s")
 
     rules = Rules(config)
+    debug = Debug()
 
     if rules.load_grammar():
         iprint("ERROR: load_grammar", file=sys.stderr)
@@ -94,6 +95,7 @@ def pcfg_mower(config):
     if config.output_dir == "":
         # output grammar is not defined
         # just printing password guesses count
+        # debug.print_prob_groups(rules)
         return 0
 
     filter = Filter(rules)
@@ -121,7 +123,7 @@ def pcfg_mower(config):
         if guess_cnt == -1:
             iprint("ERROR: get_guesses_cnt", file=sys.stderr)
             return 1
-        debug = Debug()
+
         debug.print_appended_dictionary_words(attack_dictionaries, config.quiet)
 
     if config.limit == 0:
